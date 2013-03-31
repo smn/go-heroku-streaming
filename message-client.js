@@ -26,9 +26,12 @@ MessageClient.prototype.start = function() {
         method: 'GET',
         auth: this.auth
     };
-    var self = this;
+    this.connect(options);
+};
 
-    this.connection = http.request(options, function(resp) {
+MessageClient.prototype.connect = function(options) {
+    var self = this;
+    connection = http.request(options, function(resp) {
         buffer = '';
         resp.setEncoding('utf8');
         resp.on('data', function (chunk) {
@@ -36,12 +39,17 @@ MessageClient.prototype.start = function() {
             buffer = self.parse_buffer(buffer);
         });
     });
-    this.connection.on('error', function(e) {
+    connection.on('error', function(e) {
         console.log('Problem with request: ' + e.message);
     });
-    this.connection.end();
+
+    connection.on('close', function() {
+        console.log('Server disconnected, reconnecting.');
+        self.connect(options);
+    });
+    connection.end();
 };
-    
+
 MessageClient.prototype.parse_buffer = function(buffer) {
     var newline_pos = buffer.indexOf('\n');
     if(newline_pos >= 0) {
