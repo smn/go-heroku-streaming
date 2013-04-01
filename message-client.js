@@ -42,6 +42,7 @@ MessageClient.prototype.connect = function(options) {
             buffer = self.parse_buffer(buffer);
         });
     });
+    connection.setSocketKeepAlive(true, 0);
     connection.on('error', function(e) {
         console.log('Problem with request: ' + e.message);
     });
