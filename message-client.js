@@ -24,7 +24,10 @@ MessageClient.prototype.start = function() {
         port: this.port,
         path: this.path,
         method: 'GET',
-        auth: this.auth
+        auth: this.auth,
+        headers: {
+            'Connection': 'keep-alive'
+        }
     };
     this.connect(options);
 };
